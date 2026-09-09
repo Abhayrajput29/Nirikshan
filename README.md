@@ -1,4 +1,4 @@
-# CivicMap Naubasta Prototype
+# CivicMap Prototype
 
 Google-Maps-inspired civic reporting UI with zoom-dynamic area quality polygons and place-centric complaint flow.
 
