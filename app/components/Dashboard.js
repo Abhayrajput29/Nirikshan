@@ -571,26 +571,18 @@ export default function Dashboard() {
         const areaName = feature.properties.name || "Administrative Area";
         const isMacroLevel = ["india-states", "up-districts", "kanpur-subdistricts", "macro"].includes(level);
 
-        // Preview name badge visible on map prior to zooming in
-        if (isMacroLevel && !isHeatmap) {
-          childLayer.bindTooltip(`<span class="area-permanent-pill">${areaName}</span>`, {
-            permanent: true,
-            direction: "center",
-            className: "area-permanent-label"
-          });
-        } else {
-          childLayer.bindTooltip(`
-            <div class="area-tooltip-content">
-              <div class="area-tooltip-title">${areaName}</div>
-              <div class="area-tooltip-badge" style="background:${scoreToColor(feature.properties.area_score)}22; color:${scoreToColor(feature.properties.area_score)}; border-color:${scoreToColor(feature.properties.area_score)}">
-                AQI Score: ${feature.properties.area_score} • ${feature.properties.area_status || "Standard"}
-              </div>
+        // Apply hover tooltip for area details
+        childLayer.bindTooltip(`
+          <div class="area-tooltip-content">
+            <div class="area-tooltip-title">${areaName}</div>
+            <div class="area-tooltip-badge" style="background:${scoreToColor(feature.properties.area_score)}22; color:${scoreToColor(feature.properties.area_score)}; border-color:${scoreToColor(feature.properties.area_score)}">
+              AQI Score: ${feature.properties.area_score} • ${feature.properties.area_status || "Standard"}
             </div>
-          `, {
-            sticky: true,
-            className: "glass-area-tooltip"
-          });
-        }
+          </div>
+        `, {
+          sticky: true,
+          className: "glass-area-tooltip"
+        });
 
         childLayer.on("mouseover", (e) => {
           // Update live preview HUD on hover
