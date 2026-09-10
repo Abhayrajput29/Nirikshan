@@ -116,7 +116,20 @@ function getAreaParentMap() {
   return map;
 }
 
+const areaScoreCache = new Map();
+const AREA_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+export function invalidateAreaCache() {
+  areaScoreCache.clear();
+}
+
 export async function listAreas(level) {
+  const now = Date.now();
+  const cached = areaScoreCache.get(level);
+  if (cached && (now - cached.timestamp < AREA_CACHE_TTL_MS)) {
+    return cached.data;
+  }
+
   const dataset = getAreas(level);
   
   const { db } = await connectToDatabase();
@@ -126,7 +139,7 @@ export async function listAreas(level) {
 
   const areaParentMap = getAreaParentMap();
 
-  return {
+  const result = {
     type: "FeatureCollection",
     features: dataset.features.map((feature) => {
       const score = computeAreaScore(feature, level, reviews, complaints, places, areaParentMap);
@@ -140,4 +153,8 @@ export async function listAreas(level) {
       };
     })
   };
+
+  areaScoreCache.set(level, { data: result, timestamp: now });
+  return result;
 }
+
